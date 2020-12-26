@@ -121,20 +121,15 @@ function View() {
     }
 
     gameBoardElement.addEventListener('click', e => {
-      //   console.log(e);
-      //   console.log(e.srcElement.attributes[1].nodeValue);
       const [row, col] = e.srcElement.attributes[1].nodeValue.split(',');
-      //verify if move is possible,
-      //if it is mark the board,
-      // check for win,
+      // verify if move is possible,
+      // if it is mark the board,
       // set next player turn
       if (gameBoard.isValidMove(Number(row), Number(col))) {
-        console.log('valid');
         const marker = gameManager.whichPlayerTurn();
         gameBoard.markPosition(Number(row), Number(col), marker);
+        // I wonder if it's possible to move the next line elsewhere or if this is best
         gameManager.nextPlayerTurn();
-      } else {
-        console.log('invalid');
       }
     });
   }
@@ -159,10 +154,6 @@ function View() {
     showMessage,
     disableBoard
   };
-}
-
-function player(sign) {
-  return { sign };
 }
 
 //start game
@@ -206,17 +197,7 @@ function GameManager() {
   };
 }
 
-// console.log(GameBoard().getGameBoard());
-
 const view = new View();
 const gameBoard = new GameBoard();
 const gameManager = new GameManager();
 gameManager.startGame();
-
-// view.renderBoard([
-//   ['x', '_', 'o'],
-//   ['x', '_', 'o'],
-//   ['o', '_', 'x']
-// ]);
-// const gameManager = GameManager();
-// gameBoard.buildGameBoard();
