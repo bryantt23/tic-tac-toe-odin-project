@@ -23,11 +23,76 @@ function GameBoard() {
     gameBoard[row][col] = marker;
   }
 
+  function hasWinner() {
+    return horizontalWinner() || verticalWinner() || diagonalWinner();
+  }
+
+  function horizontalWinner() {
+    for (let i = 0; i < size; i++) {
+      let ct = 0;
+      for (let j = 0; j < size; j++) {
+        if (gameBoard[i][j] == 'X') {
+          ct++;
+        } else if (gameBoard[i][j] === 'O') {
+          ct--;
+        }
+      }
+      if (ct === 3 || ct === -3) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function verticalWinner() {
+    for (let j = 0; j < size; j++) {
+      let ct = 0;
+      for (let i = 0; i < size; i++) {
+        if (gameBoard[i][j] == 'X') {
+          ct++;
+        } else if (gameBoard[i][j] === 'O') {
+          ct--;
+        }
+      }
+      if (ct === 3 || ct === -3) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function diagonalWinner() {
+    let ct = 0;
+    for (let i = 0; i < size; i++) {
+      if (gameBoard[i][i] == 'X') {
+        ct++;
+      } else if (gameBoard[i][i] === 'O') {
+        ct--;
+      }
+    }
+    if (ct === 3 || ct === -3) {
+      return true;
+    }
+
+    ct = 0;
+    for (let i = 0; i < size; i++) {
+      if (gameBoard[i][size - i - 1] == 'X') {
+        ct++;
+      } else if (gameBoard[i][size - i - 1] === 'O') {
+        ct--;
+      }
+    }
+    if (ct === 3 || ct === -3) {
+      return true;
+    }
+  }
+
   return {
     buildGameBoard,
     getGameBoard,
     isValidMove,
-    markPosition
+    markPosition,
+    hasWinner
   };
 }
 
@@ -35,9 +100,6 @@ function View() {
   function renderBoard(arr) {
     const gameBoardElement = document.querySelector('#game-board');
 
-    // if (gameBoardElement.hasChildNodes()) {
-    //   gameBoardElement.removeChild(gameBoardElement.firstChild);
-    // }
     if (gameBoardElement.hasChildNodes()) {
       while (gameBoardElement.firstChild) {
         gameBoardElement.removeChild(gameBoardElement.firstChild);
@@ -77,14 +139,13 @@ function View() {
     });
   }
 
-  function showTurn() {
+  function showMessage(message = '') {
+    if (message === '') {
+      const playerTurn = gameManager.whichPlayerTurn();
+      message = `It is ${playerTurn}'s turn`;
+    } else {
+    }
     const playerTurnDiv = document.querySelector('#player-turn');
-    let message;
-    // if(gameManager.isGameOver()){
-    //   message="Game "
-    // }
-    const playerTurn = gameManager.whichPlayerTurn();
-    message = `It is ${playerTurn}'s turn`;
     const h3 = document.createElement('h3');
     h3.textContent = message;
     if (playerTurnDiv.hasChildNodes()) {
@@ -95,7 +156,7 @@ function View() {
 
   return {
     renderBoard,
-    showTurn
+    showMessage
   };
 }
 
@@ -107,27 +168,33 @@ function player(sign) {
 //keep track of turn
 function GameManager() {
   let playerTurn = 0;
+
   function whichPlayerTurn() {
-    return playerTurn % 2 == 0 ? 'x' : 'o';
+    return playerTurn % 2 == 0 ? 'X' : 'O';
   }
 
   function nextPlayerTurn() {
-    playerTurn++;
     view.renderBoard(gameBoard.getGameBoard());
+    let message;
+    if (gameBoard.hasWinner()) {
+      message = whichPlayerTurn() + ' has won!';
+      view.showMessage(message);
+    } else {
+      playerTurn++;
+      message = `It is ${playerTurn}'s turn`;
+      view.showMessage();
+    }
   }
 
   function startGame() {
     view.renderBoard(gameBoard.buildGameBoard());
-    view.showTurn();
+    view.showMessage();
   }
-
-  function isGameOver() {}
 
   return {
     whichPlayerTurn,
     nextPlayerTurn,
-    startGame,
-    isGameOver
+    startGame
   };
 }
 
