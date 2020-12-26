@@ -187,7 +187,7 @@ function GameManager() {
 
   function startGame() {
     view.renderBoard(gameBoard.buildGameBoard());
-    view.showMessage();
+    view.showMessage(`It is ${whichPlayerTurn()}'s turn`);
   }
 
   return {
