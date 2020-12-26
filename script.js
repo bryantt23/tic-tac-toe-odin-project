@@ -144,12 +144,7 @@ function View() {
     gameBoardElement.classList.add('disabled-div');
   }
 
-  function showMessage(message = '') {
-    if (message === '') {
-      const playerTurn = gameManager.whichPlayerTurn();
-      message = `It is ${playerTurn}'s turn`;
-    }
-
+  function showMessage(message) {
     const playerTurnDiv = document.querySelector('#player-turn');
     const h3 = document.createElement('h3');
     h3.textContent = message;
@@ -188,8 +183,14 @@ function GameManager() {
       view.disableBoard();
     } else {
       playerTurn++;
-      message = `It is ${playerTurn}'s turn`;
-      view.showMessage();
+      if (playerTurn === 9) {
+        message = "It's a draw!";
+        view.showMessage(message);
+        view.disableBoard();
+      } else {
+        message = `It is ${whichPlayerTurn()}'s turn`;
+        view.showMessage(message);
+      }
     }
   }
 
