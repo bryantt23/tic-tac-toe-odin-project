@@ -19,10 +19,15 @@ function GameBoard() {
     return gameBoard[row][col] === '_';
   }
 
+  function markPosition(row, col, marker) {
+    gameBoard[row][col] = marker;
+  }
+
   return {
     buildGameBoard,
     getGameBoard,
-    isValidMove
+    isValidMove,
+    markPosition
   };
 }
 
@@ -30,9 +35,15 @@ function View() {
   function renderBoard(arr) {
     const gameBoardElement = document.querySelector('#game-board');
 
+    // if (gameBoardElement.hasChildNodes()) {
+    //   gameBoardElement.removeChild(gameBoardElement.firstChild);
+    // }
     if (gameBoardElement.hasChildNodes()) {
-      gameBoardElement.removeChild(gameBoardElement.firstChild);
+      while (gameBoardElement.firstChild) {
+        gameBoardElement.removeChild(gameBoardElement.firstChild);
+      }
     }
+
     const size = arr.length;
 
     for (let i = 0; i < size; i++) {
@@ -48,20 +59,43 @@ function View() {
     }
 
     gameBoardElement.addEventListener('click', e => {
-      console.log(e);
-      console.log(e.srcElement.attributes[1].nodeValue);
+      //   console.log(e);
+      //   console.log(e.srcElement.attributes[1].nodeValue);
       const [row, col] = e.srcElement.attributes[1].nodeValue.split(',');
       //verify if move is possible,
       //if it is mark the board,
       // check for win,
       // set next player turn
       if (gameBoard.isValidMove(Number(row), Number(col))) {
+        console.log('valid');
+        const marker = gameManager.whichPlayerTurn();
+        gameBoard.markPosition(Number(row), Number(col), marker);
+        gameManager.nextPlayerTurn();
+      } else {
+        console.log('invalid');
       }
     });
   }
 
+  function showTurn() {
+    const playerTurnDiv = document.querySelector('#player-turn');
+    let message;
+    // if(gameManager.isGameOver()){
+    //   message="Game "
+    // }
+    const playerTurn = gameManager.whichPlayerTurn();
+    message = `It is ${playerTurn}'s turn`;
+    const h3 = document.createElement('h3');
+    h3.textContent = message;
+    if (playerTurnDiv.hasChildNodes()) {
+      playerTurnDiv.removeChild(playerTurnDiv.firstChild);
+    }
+    playerTurnDiv.appendChild(h3);
+  }
+
   return {
-    renderBoard
+    renderBoard,
+    showTurn
   };
 }
 
@@ -79,11 +113,12 @@ function GameManager() {
 
   function nextPlayerTurn() {
     playerTurn++;
-    view.renderBoard();
+    view.renderBoard(gameBoard.getGameBoard());
   }
 
   function startGame() {
     view.renderBoard(gameBoard.buildGameBoard());
+    view.showTurn();
   }
 
   function isGameOver() {}
@@ -109,4 +144,4 @@ gameManager.startGame();
 //   ['o', '_', 'x']
 // ]);
 // const gameManager = GameManager();
-gameBoard.buildGameBoard();
+// gameBoard.buildGameBoard();
