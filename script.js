@@ -139,12 +139,17 @@ function View() {
     });
   }
 
+  function disableBoard() {
+    const gameBoardElement = document.querySelector('#game-board');
+    gameBoardElement.classList.add('disabled-div');
+  }
+
   function showMessage(message = '') {
     if (message === '') {
       const playerTurn = gameManager.whichPlayerTurn();
       message = `It is ${playerTurn}'s turn`;
-    } else {
     }
+
     const playerTurnDiv = document.querySelector('#player-turn');
     const h3 = document.createElement('h3');
     h3.textContent = message;
@@ -156,7 +161,8 @@ function View() {
 
   return {
     renderBoard,
-    showMessage
+    showMessage,
+    disableBoard
   };
 }
 
@@ -179,6 +185,7 @@ function GameManager() {
     if (gameBoard.hasWinner()) {
       message = whichPlayerTurn() + ' has won!';
       view.showMessage(message);
+      view.disableBoard();
     } else {
       playerTurn++;
       message = `It is ${playerTurn}'s turn`;
